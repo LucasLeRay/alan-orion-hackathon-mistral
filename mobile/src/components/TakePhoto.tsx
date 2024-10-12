@@ -4,9 +4,11 @@ import UploadIcon from '@mui/icons-material/Upload';
 import { useState } from 'react';
 
 export const TakePhoto = ({
-  onPhoto
+  onPhoto,
+  inferIsLoading
 }: {
   onPhoto: (photo: string) => void;
+  inferIsLoading: boolean;
 }) => {
   const [photo, setPhoto] = useState<string | null>(null);
 
@@ -79,9 +81,10 @@ export const TakePhoto = ({
             input.click();
           }}
         >
-          <PhotoCameraIcon style={{ color: '#22E39E' }} />
+          <PhotoCameraIcon style={{ color: '#5b59f3' }} />
         </IconButton>
         <IconButton
+          loading={inferIsLoading}
           disabled={!photo}
           onClick={() => {
             if (photo) {
@@ -89,7 +92,7 @@ export const TakePhoto = ({
             }
           }}
         >
-          <UploadIcon style={{ color: '#22E39E' }} />
+          <UploadIcon style={{ color: '#5b59f3' }} />
         </IconButton>
       </Stack>
     </Stack>

@@ -26,7 +26,7 @@ export const Header = () => {
         <Typography
           level='h4'
           sx={{
-            color: '#22E39E'
+            color: '#5b59f3'
           }}
         >
           Orion

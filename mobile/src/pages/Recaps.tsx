@@ -71,10 +71,10 @@ export const Recaps = ({
               data: recaps.map(recap => recap.general_score),
 
               segment: {
-                borderColor: meanGeneralScore(recaps) > 0.5 ? 'red' : '#22E39E'
+                borderColor: meanGeneralScore(recaps) > 0.5 ? 'red' : '#5b59f3'
               },
               backgroundColor:
-                meanGeneralScore(recaps) > 0.5 ? 'red' : '#22E39E',
+                meanGeneralScore(recaps) > 0.5 ? 'red' : '#5b59f3',
               fill: true
             }
           ]
@@ -88,7 +88,10 @@ export const Recaps = ({
               <CloseIcon />
             </IconButton>
           </Stack>
-          <Typography level='h4'>{recaps[0].description}</Typography>
+          <Typography level='h4'>
+            {recaps[0].sentiment}
+            {recaps[0].general_score}
+          </Typography>
           {recaps[0].general_score < 0.3 ? (
             <Typography level='h3' color='success'>
               Good
@@ -106,13 +109,9 @@ export const Recaps = ({
           <Typography level='h4'>
             {format(new Date(recaps[0].date), 'dd/MM/yyyy')}
           </Typography>
-
-          <Typography level='h4'>
-            General Score: {recaps[0].general_score}
-          </Typography>
         </Card>
       )}
-      {recaps.map((recap, index) => (
+      {recaps.slice(1).map((recap, index) => (
         <Card key={format(recap.date, 'dd/MM/yyyy')}>
           <Stack direction='row' justifyContent='space-between'>
             <Avatar src={recap.image} />
@@ -120,7 +119,7 @@ export const Recaps = ({
               <Typography
                 level='h4'
                 sx={{
-                  color: '#22E39E'
+                  color: '#5b59f3'
                 }}
               >
                 {format(recap.date, 'dd/MM/yyyy')}
