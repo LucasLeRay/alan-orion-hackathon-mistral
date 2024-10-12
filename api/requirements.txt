@@ -1,0 +1,9 @@
+fastapi
+uvicorn[standard]
+clip @ git+https://github.com/openai/CLIP.git@dcba3cb2e2827b402d2701e7e1c7d9fed8a20ef1
+pandas==2.2.3
+polars==1.9.0
+pillow==10.4.0
+torch==2.4.1
+torchvision==0.19.1
+requests==2.32.3
