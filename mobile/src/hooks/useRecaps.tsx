@@ -2,7 +2,7 @@ import axios from 'axios';
 import { toast } from 'sonner';
 
 const INFER_API =
-  'https://alan-orion-api-754072912278.europe-west9.run.app/infer';
+  'https://alan-orion-api-754072912278.europe-west9.run.app/infer/';
 
 export type Recap = {
   photo: string;
@@ -12,19 +12,27 @@ export type Recap = {
 
 export const useRecaps = () => {
   async function infer(image: string) {
+    const byteString = atob(image.split(',')[1]);
+    const mimeString = image.split(',')[0].split(':')[1].split(';')[0];
+
+    const ab = new ArrayBuffer(byteString.length);
+    const ia = new Uint8Array(ab);
+    for (let i = 0; i < byteString.length; i++) {
+      ia[i] = byteString.charCodeAt(i);
+    }
+
+    const blob = new Blob([ab], { type: mimeString });
+
+    const formData = new FormData();
+    formData.append('image', blob, 'image.png'); // 'image.png' is the file name
+
     return axios
-      .post(
-        INFER_API,
-        {
-          image
-        },
-        {
-          headers: {
-            'Access-Control-Allow-Origin': '*',
-            'Content-Type': 'application/json'
-          }
+      .post(INFER_API, formData, {
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Content-Type': 'multipart/form-data'
         }
-      )
+      })
       .then(response => {
         console.log(response.data);
         toast.success('Inference successful');

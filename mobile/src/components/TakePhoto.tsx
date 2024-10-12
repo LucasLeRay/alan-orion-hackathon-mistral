@@ -27,7 +27,6 @@ export const TakePhoto = ({
       >
         {photo && (
           <img
-            src
             alt='Photo'
             src={photo}
             style={{
