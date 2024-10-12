@@ -4,7 +4,10 @@ from embeddings import get_text_embeddings
 from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from PIL import Image
+
 from similarity import compute_labels_similarity
+from score import compute_weighted_score
+from models import get_image_description
 
 ORIGINS = [
     "http://localhost",
@@ -33,7 +36,14 @@ async def root():
 async def infer(image: UploadFile = File(...)):
     image_data = await image.read()
     image = Image.open(BytesIO(image_data))
-    return {"scores": compute_labels_similarity(image, text_embeddings)}
+    scores = compute_labels_similarity(image, text_embeddings)
+    general_score = compute_weighted_score(scores)
+
+    return {
+        "description": get_image_description(image, scores, general_score),
+        "scores": scores,
+        "general_score": general_score,
+    }
 
 
 if __name__ == "__main__":
