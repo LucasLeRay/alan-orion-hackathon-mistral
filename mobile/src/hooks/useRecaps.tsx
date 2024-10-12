@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 const INFER_API =
   'https://alan-orion-api-754072912278.europe-west9.run.app/infer/';
 
+// @ts-ignore
 const fakeRecaps = [
   {
     image:
@@ -239,7 +240,9 @@ export const useRecaps = () => {
     infer,
     recaps,
     deleteRecap: (index: number) => {
-      const newStoredRecaps = storedRecaps.filter((_, i) => i !== index);
+      const newStoredRecaps = storedRecaps.filter(
+        (_: any, i: number) => i !== index
+      );
       localStorage.setItem('recaps', JSON.stringify(newStoredRecaps));
       setRecaps(newStoredRecaps);
     }

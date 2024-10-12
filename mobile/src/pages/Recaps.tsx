@@ -39,7 +39,7 @@ export const Recaps = ({
   deleteRecap: (index: number) => void;
 }) => {
   return (
-    <Stack>
+    <Stack spacing={2}>
       <Line
         options={{
           plugins: {
@@ -55,34 +55,26 @@ export const Recaps = ({
               grid: {
                 display: false
               }
-              // ticks: {
-              //   color: 'transparent' // Makes the ticks (numbers) invisible
-              // },
-              // border: {
-              //   color: 'transparent' // Removes the grey axis line
-              // }
             },
             x: {
               grid: {
                 display: false
               }
-              // ticks: {
-              //   color: 'transparent' // Makes the ticks (numbers) invisible
-              // },
-              // border: {
-              //   color: 'transparent' // Removes the grey axis line
-              // }
             }
           }
         }}
         data={{
-          labels: recaps.map(recap => format(recap.date, 'dd/MM/yyyy')),
+          labels: recaps.map(recap => format(recap.date, 'dd/MM')),
           datasets: [
             {
               label: 'Status',
               data: recaps.map(recap => recap.general_score),
-              // borderColor: '#22E39E',
-              backgroundColor: meanGeneralScore(recaps) > 0.5 ? 'red' : 'green',
+
+              segment: {
+                borderColor: meanGeneralScore(recaps) > 0.5 ? 'red' : '#22E39E'
+              },
+              backgroundColor:
+                meanGeneralScore(recaps) > 0.5 ? 'red' : '#22E39E',
               fill: true
             }
           ]
