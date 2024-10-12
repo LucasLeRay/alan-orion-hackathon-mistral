@@ -1,8 +1,8 @@
-import { Avatar, Card, Stack, Typography } from '@mui/joy';
+import { Avatar, Card, IconButton, Stack, Typography } from '@mui/joy';
 import { Recap } from '../hooks/useRecaps';
 import { format } from 'date-fns';
-
 import { Line } from 'react-chartjs-2';
+import CloseIcon from '@mui/icons-material/Close';
 
 import {
   Chart as ChartJS,
@@ -25,7 +25,19 @@ ChartJS.register(
   Legend
 );
 
-export const Recaps = ({ recaps }: { recaps: Recap[] }) => {
+function meanGeneralScore(recaps: Recap[]) {
+  return (
+    recaps.reduce((acc, recap) => acc + recap.general_score, 0) / recaps.length
+  );
+}
+
+export const Recaps = ({
+  recaps,
+  deleteRecap
+}: {
+  recaps: Recap[];
+  deleteRecap: (index: number) => void;
+}) => {
   return (
     <Stack>
       <Line
@@ -42,24 +54,24 @@ export const Recaps = ({ recaps }: { recaps: Recap[] }) => {
               suggestedMin: 0,
               grid: {
                 display: false
-              },
-              ticks: {
-                color: 'transparent' // Makes the ticks (numbers) invisible
-              },
-              border: {
-                color: 'transparent' // Removes the grey axis line
               }
+              // ticks: {
+              //   color: 'transparent' // Makes the ticks (numbers) invisible
+              // },
+              // border: {
+              //   color: 'transparent' // Removes the grey axis line
+              // }
             },
             x: {
               grid: {
                 display: false
-              },
-              ticks: {
-                color: 'transparent' // Makes the ticks (numbers) invisible
-              },
-              border: {
-                color: 'transparent' // Removes the grey axis line
               }
+              // ticks: {
+              //   color: 'transparent' // Makes the ticks (numbers) invisible
+              // },
+              // border: {
+              //   color: 'transparent' // Removes the grey axis line
+              // }
             }
           }
         }}
@@ -68,31 +80,69 @@ export const Recaps = ({ recaps }: { recaps: Recap[] }) => {
           datasets: [
             {
               label: 'Status',
-              data: recaps.map(recap => recap.status),
-              borderColor: '#22E39E',
+              data: recaps.map(recap => recap.general_score),
+              // borderColor: '#22E39E',
+              backgroundColor: meanGeneralScore(recaps) > 0.5 ? 'red' : 'green',
               fill: true
             }
           ]
         }}
       />
-      {recaps.map(recap => (
-        <Card key={format(recap.date, 'dd/MM/yyyy')}>
+      {recaps.length > 0 && (
+        <Card>
           <Stack direction='row' justifyContent='space-between'>
-            <Avatar src={recap.photo} />
-            <Typography
-              level='h4'
-              sx={{
-                color: '#22E39E'
-              }}
-            >
-              {format(recap.date, 'dd/MM/yyyy')}
-            </Typography>
+            <Avatar src={recaps[0].image} />
+            <IconButton onClick={() => deleteRecap(0)}>
+              <CloseIcon />
+            </IconButton>
           </Stack>
-          {recap.status < 0.3 ? (
+          <Typography level='h4'>{recaps[0].description}</Typography>
+          {recaps[0].general_score < 0.3 ? (
             <Typography level='h3' color='success'>
               Good
             </Typography>
-          ) : recap.status < 0.7 ? (
+          ) : recaps[0].general_score < 0.7 ? (
+            <Typography level='h3' color='warning'>
+              Average
+            </Typography>
+          ) : (
+            <Typography level='h3' color='danger'>
+              Bad
+            </Typography>
+          )}
+
+          <Typography level='h4'>
+            {format(new Date(recaps[0].date), 'dd/MM/yyyy')}
+          </Typography>
+
+          <Typography level='h4'>
+            General Score: {recaps[0].general_score}
+          </Typography>
+        </Card>
+      )}
+      {recaps.map((recap, index) => (
+        <Card key={format(recap.date, 'dd/MM/yyyy')}>
+          <Stack direction='row' justifyContent='space-between'>
+            <Avatar src={recap.image} />
+            <Stack direction='row' spacing={2} alignItems='center'>
+              <Typography
+                level='h4'
+                sx={{
+                  color: '#22E39E'
+                }}
+              >
+                {format(recap.date, 'dd/MM/yyyy')}
+              </Typography>
+              <IconButton onClick={() => deleteRecap(index)}>
+                <CloseIcon />
+              </IconButton>
+            </Stack>
+          </Stack>
+          {recap.general_score < 0.3 ? (
+            <Typography level='h3' color='success'>
+              Good
+            </Typography>
+          ) : recap.general_score < 0.7 ? (
             <Typography level='h3' color='warning'>
               Average
             </Typography>
