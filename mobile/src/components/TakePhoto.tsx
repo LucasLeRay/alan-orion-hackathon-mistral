@@ -68,8 +68,16 @@ export const TakePhoto = ({
             // input.capture = 'user'; // Try commenting this out for now
             input.onchange = event => {
               console.log('event.target', event.target);
+
               const file = (event.target as HTMLInputElement).files?.[0];
               if (file) {
+                if (file.size > 10 * 1024 * 1024) {
+                  alert(
+                    'Image exceeds the 10MB size limit. Please select a smaller image.'
+                  );
+                  return; // Prevent further execution
+                }
+
                 const reader = new FileReader();
                 reader.onloadend = () => {
                   const base64Image = reader.result as string;
