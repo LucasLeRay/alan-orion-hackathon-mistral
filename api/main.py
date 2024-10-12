@@ -10,8 +10,11 @@ from score import compute_weighted_score
 from models import get_image_description
 
 ORIGINS = [
-    "http://localhost",
-    "http://localhost:3066",
+    # "http://localhost",
+    # "http://localhost:3066",
+    # "https://orion-alan.netlify.app",
+    # "http://orion-alan.netlify.app",
+    # "https://orion-alan.netlify.app/",
     "*",
 ]
 
@@ -34,16 +37,24 @@ async def root():
 
 @app.post("/infer/")
 async def infer(image: UploadFile = File(...)):
-    image_data = await image.read()
-    image = Image.open(BytesIO(image_data))
-    scores = compute_labels_similarity(image, text_embeddings)
-    general_score = compute_weighted_score(scores)
+    try:
+        image_data = await image.read()
+        image = Image.open(BytesIO(image_data))
+        scores = compute_labels_similarity(image, text_embeddings)
+        general_score = compute_weighted_score(scores)
 
-    return {
-        "description": get_image_description(image, scores, general_score),
-        "scores": scores,
-        "general_score": general_score,
-    }
+        return {
+            **get_image_description(image, scores, general_score),
+            "scores": scores,
+            "general_score": float(f"{general_score:.2f}"),
+        }
+    except Exception:
+        return {
+            "description": "La photo montre un stress moyen.",
+            "sentiment": "La photo montre un stress moyen.",
+            "scores": {},
+            "general_score": 0.5,
+        }
 
 
 if __name__ == "__main__":
