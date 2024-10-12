@@ -1,4 +1,4 @@
-import { Box, Stack } from '@mui/joy';
+import { Box, Stack, Typography } from '@mui/joy';
 import OrionSVG from '../assets/orion.svg';
 
 export const Header = () => {
@@ -10,16 +10,27 @@ export const Header = () => {
       display='flex'
       flexDirection='column'
     >
-      <Stack direction='row' alignItems='end' justifyContent='space-between'>
-        <Stack direction='row' alignItems='center' spacing={1}>
-          <img
-            src={OrionSVG}
-            alt='orion icon'
-            style={{
-              width: '64px'
-            }}
-          />
-        </Stack>
+      <Stack
+        direction='row'
+        alignItems='center'
+        justifyContent='space-between'
+        p={2}
+      >
+        <img
+          src={OrionSVG}
+          alt='orion'
+          style={{
+            width: '64px'
+          }}
+        />
+        <Typography
+          level='h4'
+          sx={{
+            color: '#22E39E'
+          }}
+        >
+          Orion
+        </Typography>
       </Stack>
     </Box>
   );
