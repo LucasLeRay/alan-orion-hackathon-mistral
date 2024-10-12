@@ -12,6 +12,9 @@ containerize:
 test-image:
 	docker run -p 8080:8080 gcr.io/$(PROJECT_ID)/alan-orion-api:latest
 
+test-local:
+	uvicorn main:app --host 0.0.0.0 --port=8080
+
 push-image:
 	docker tag gcr.io/$(PROJECT_ID)/alan-orion-api gcr.io/$(PROJECT_ID)/alan-orion-api:v1
 	gcloud config set project $(PROJECT_ID)
@@ -24,4 +27,6 @@ deploy: containerize push-image
 	--image gcr.io/$(PROJECT_ID)/alan-orion-api:v1 \
 	--platform managed \
 	--region europe-west9 \
-	--allow-unauthenticated
+	--allow-unauthenticated \
+	--memory 16Gi \
+	--cpu 8 \

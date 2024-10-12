@@ -1,21 +1,26 @@
+from io import BytesIO
+
+from embeddings import get_text_embeddings
 from fastapi import FastAPI, File, UploadFile
 from PIL import Image
-import torch
-from typing import List
+from similarity import compute_labels_similarity
 
 app = FastAPI()
+text_embeddings = get_text_embeddings()
+
 
 @app.get("/")
 async def root():
-    return {"message": "Hello, FastAPI on GCP!"}
+    return {"message": "OK"}
+
 
 @app.post("/infer/")
-async def infer(image: UploadFile = File(...), labels: List[str] = ["a photo of a dog", "a photo of a cat"]):
+async def infer(image: UploadFile = File(...)):
     image_data = await image.read()
     image = Image.open(BytesIO(image_data))
+    return {"scores": compute_labels_similarity(image, text_embeddings)}
 
-    return {"scores": "la quoi?"}
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8080)
