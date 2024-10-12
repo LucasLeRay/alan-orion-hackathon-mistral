@@ -2,11 +2,26 @@ from io import BytesIO
 
 from embeddings import get_text_embeddings
 from fastapi import FastAPI, File, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
 from PIL import Image
 from similarity import compute_labels_similarity
 
+ORIGINS = [
+    "http://localhost",
+    "http://localhost:3066",
+    "*",
+]
+
 app = FastAPI()
 text_embeddings = get_text_embeddings()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=ORIGINS,  # Define the allowed origins
+    allow_credentials=True,  # Allow cookies, authentication headers
+    allow_methods=["*"],  # Allow all methods (GET, POST, etc.)
+    allow_headers=["*"],  # Allow all headers (authorization, content-type, etc.)
+)
 
 
 @app.get("/")
