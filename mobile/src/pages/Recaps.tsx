@@ -92,8 +92,7 @@ export const Recaps = ({
             </IconButton>
           </Stack>
           <Typography level='h4'>
-            {recaps[0].sentiment}
-            {recaps[0].general_score}
+            {recaps[0].sentiment} {recaps[0].general_score * 100}%
           </Typography>
           {recaps[0].general_score < 0.3 ? (
             <Typography level='h3' color='success'>
