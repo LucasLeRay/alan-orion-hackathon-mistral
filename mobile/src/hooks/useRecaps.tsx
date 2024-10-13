@@ -46,10 +46,66 @@ export type Recap = Omit<InferResponse, 'scores'> & {
   date: string;
 };
 
+async function reduceImageSize(
+  base64Image: string,
+  maxWidth: number,
+  maxHeight: number,
+  quality: number = 0.7
+): Promise<string> {
+  return new Promise(resolve => {
+    const img = new Image();
+    img.src = base64Image;
+
+    img.onload = () => {
+      // Create a canvas element
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+
+      // Calculate the new dimensions while maintaining the aspect ratio
+      let width = img.width;
+      let height = img.height;
+
+      if (width > maxWidth || height > maxHeight) {
+        const aspectRatio = width / height;
+        if (width > height) {
+          width = maxWidth;
+          height = Math.round(maxWidth / aspectRatio);
+        } else {
+          height = maxHeight;
+          width = Math.round(maxHeight * aspectRatio);
+        }
+      }
+
+      // Set canvas dimensions to the new size
+      canvas.width = width;
+      canvas.height = height;
+
+      // Draw the image to the canvas
+      ctx?.drawImage(img, 0, 0, width, height);
+
+      // Convert the canvas back to base64 with JPEG compression
+      const reducedBase64 = canvas.toDataURL('image/jpeg', quality); // quality from 0 to 1 (lower is more compressed)
+
+      resolve(reducedBase64);
+    };
+  });
+}
+
 export const useRecaps = () => {
   const storedRecaps = JSON.parse(localStorage.getItem('recaps') || '[]');
   const [recaps, setRecaps] = useState<Recap[]>(storedRecaps);
   const [inferIsLoading, setInferIsLoading] = useState(false);
+
+  async function saveRecap(recap: Recap[]) {
+    const recapWithReducedImages = await Promise.all(
+      (recap as Recap[]).map(async recap => {
+        const reducedImage = await reduceImageSize(recap.image, 500, 500);
+        return { ...recap, image: reducedImage };
+      })
+    );
+
+    localStorage.setItem('recaps', JSON.stringify(recapWithReducedImages));
+  }
 
   async function infer(image: string) {
     const byteString = atob(image.split(',')[1]);
@@ -74,7 +130,7 @@ export const useRecaps = () => {
           'Content-Type': 'multipart/form-data'
         }
       })
-      .then(response => {
+      .then(async response => {
         const newStoredRecaps: Recap[] = [
           {
             image,
@@ -86,7 +142,7 @@ export const useRecaps = () => {
           ...storedRecaps
         ];
 
-        localStorage.setItem('recaps', JSON.stringify(newStoredRecaps));
+        await saveRecap(newStoredRecaps);
         setRecaps(newStoredRecaps);
 
         console.log(response.data);
@@ -103,11 +159,11 @@ export const useRecaps = () => {
   return {
     infer,
     recaps,
-    deleteRecap: (index: number) => {
+    deleteRecap: async (index: number) => {
       const newStoredRecaps = storedRecaps.filter(
         (_: any, i: number) => i !== index
       );
-      localStorage.setItem('recaps', JSON.stringify(newStoredRecaps));
+      await saveRecap(newStoredRecaps);
       setRecaps(newStoredRecaps);
     },
     inferIsLoading

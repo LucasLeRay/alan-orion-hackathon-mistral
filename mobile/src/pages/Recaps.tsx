@@ -106,9 +106,7 @@ export const Recaps = ({
             </Typography>
           )}
 
-          <Typography level='h4'>
-            {format(new Date(recaps[0].date), 'dd/MM/yyyy')}
-          </Typography>
+          <Typography level='h4'>{recaps[0].date}</Typography>
         </Card>
       )}
       {recaps.slice(1).map((recap, index) => (
