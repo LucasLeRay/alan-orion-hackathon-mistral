@@ -38,6 +38,8 @@ export const Recaps = ({
   recaps: Recap[];
   deleteRecap: (index: number) => void;
 }) => {
+  const reversedRecaps = recaps.slice().reverse();
+
   return (
     <Stack spacing={2}>
       <Line
@@ -64,17 +66,18 @@ export const Recaps = ({
           }
         }}
         data={{
-          labels: recaps.map(recap => format(recap.date, 'dd/MM')),
+          labels: reversedRecaps.map(recap => format(recap.date, 'dd/MM')),
           datasets: [
             {
               label: 'Status',
-              data: recaps.map(recap => recap.general_score),
+              data: reversedRecaps.map(recap => recap.general_score),
 
               segment: {
-                borderColor: meanGeneralScore(recaps) > 0.5 ? 'red' : '#5b59f3'
+                borderColor:
+                  meanGeneralScore(reversedRecaps) > 0.5 ? 'red' : '#5b59f3'
               },
               backgroundColor:
-                meanGeneralScore(recaps) > 0.5 ? 'red' : '#5b59f3',
+                meanGeneralScore(reversedRecaps) > 0.5 ? 'red' : '#5b59f3',
               fill: true
             }
           ]
